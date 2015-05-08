@@ -233,7 +233,7 @@ func (tg *TargetGroup) UnmarshalYAML(unmarshal func(interface{}) error) error {
 func (tg TargetGroup) MarshalYAML() (interface{}, error) {
 	g := &struct {
 		Targets []string             `yaml:"targets"`
-		Labels  clientmodel.LabelSet `yaml:"labels"`
+		Labels  clientmodel.LabelSet `yaml:"labels,omitempty"`
 	}{
 		Targets: make([]string, 0, len(tg.Targets)),
 		Labels:  tg.Labels,
@@ -266,7 +266,7 @@ func (c *DNSConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
 // DefaultedDNSConfig is a proxy type for DNSConfig.
 type DefaultedDNSConfig struct {
 	Names           []string `yaml:"names"`
-	RefreshInterval Duration `yaml:"refresh_interval"`
+	RefreshInterval Duration `yaml:"refresh_interval,omitempty"`
 }
 
 // RelabelAction is the action to be performed on relabeling.

@@ -44,6 +44,13 @@ func main() {
 		log.Infof("Translating file %s", filename)
 	}
 
+	if *outName != "-" {
+		out, err = os.Create(*outName)
+		if err != nil {
+			log.Fatalf("Error creating output file: %s", err)
+		}
+	}
+
 	if err := translate(in, out); err != nil {
 		log.Fatal(err)
 	}
