@@ -5,12 +5,15 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"net/url"
 	"os"
 
 	"github.com/golang/protobuf/proto"
+	clientmodel "github.com/prometheus/client_golang/model"
 	"github.com/prometheus/log"
 
 	"github.com/prometheus/migrate/v0x13"
+	"github.com/prometheus/migrate/v0x14"
 )
 
 var outName = flag.String("out", "-", "Target for writing the output")
@@ -50,12 +53,76 @@ func translate(in io.Reader, out io.Writer) error {
 	if err != nil {
 		return err
 	}
-	var oldConfig v0x13.Config
-	err = proto.UnmarshalText(string(b), &oldConfig.PrometheusConfig)
+	var oldConf v0x13.Config
+	err = proto.UnmarshalText(string(b), &oldConf.PrometheusConfig)
 	if err != nil {
 		return fmt.Errorf("Error parsing old config file: %s", err)
 	}
 
-	fmt.Println(oldConfig)
+	var newGlobConf v0x14.GlobalConfig
+
+	newGlobConf.ScrapeInterval = v0x14.Duration(oldConf.ScrapeInterval())
+	// The global scrape timeout is new and will be set to the global scrape interval.
+	newGlobConf.ScrapeTimeout = newGlobConf.ScrapeInterval
+	newGlobConf.EvaluationInterval = v0x14.Duration(oldConf.EvaluationInterval())
+
+	var newConf v0x14.Config
+
+	newConf.GlobalConfig = &newGlobConf
+	if oldConf.Global != nil {
+		newConf.RuleFiles = oldConf.Global.GetRuleFile()
+	}
+
+	var scrapeConfs []*v0x14.ScrapeConfig
+	for _, oldJob := range oldConf.Jobs() {
+		scfg := &v0x14.ScrapeConfig{}
+
+		scfg.JobName = oldJob.GetName()
+
+		var firstScheme string
+		var firstPath string
+		for _, oldTG := range oldJob.TargetGroup {
+			newTG := &v0x14.TargetGroup{
+				Labels: clientmodel.LabelSet{},
+			}
+
+			for _, t := range oldTG.Target {
+				u, err := url.Parse(t)
+				if err != nil {
+					return err
+				}
+				fmt.Println(u, u.Host)
+
+				if firstScheme == "" {
+					firstScheme = u.Scheme
+				} else if u.Scheme != firstScheme {
+					return fmt.Errorf("Multiple URL schemes in Job not allowed.")
+				}
+				if firstPath == "" {
+					firstPath = u.Path
+				} else if u.Path != firstPath {
+					return fmt.Errorf("Multiple paths in Job not allowed")
+				}
+
+				newTG.Targets = append(newTG.Targets, clientmodel.LabelSet{
+					clientmodel.AddressLabel: clientmodel.LabelValue(u.Host),
+				})
+
+			}
+
+			for _, lp := range oldTG.GetLabels().GetLabel() {
+				ln := clientmodel.LabelName(lp.GetName())
+				lv := clientmodel.LabelValue(lp.GetValue())
+				newTG.Labels[ln] = lv
+			}
+			scfg.TargetGroups = append(scfg.TargetGroups, newTG)
+		}
+		scfg.Scheme = firstScheme
+
+		scrapeConfs = append(scrapeConfs, scfg)
+	}
+
+	newConf.ScrapeConfigs = scrapeConfs
+
 	return nil
 }
