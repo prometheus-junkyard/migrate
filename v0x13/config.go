@@ -165,3 +165,8 @@ func (c JobConfig) ScrapeInterval() time.Duration {
 func (c JobConfig) ScrapeTimeout() time.Duration {
 	return stringToDuration(c.GetScrapeTimeout())
 }
+
+// SDRefreshInterval gets the scrape timeout for a job.
+func (c JobConfig) SDRefreshInterval() time.Duration {
+	return stringToDuration(c.GetSdRefreshInterval())
+}

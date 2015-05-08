@@ -118,6 +118,15 @@ func translate(in io.Reader, out io.Writer) error {
 		}
 		scfg.Scheme = firstScheme
 
+		if oldJob.SdName != nil {
+			dnscfg := &v0x14.DNSConfig{}
+
+			dnscfg.Names = []string{*oldJob.SdName}
+			dnscfg.RefreshInterval = v0x14.Duration(oldJob.SDRefreshInterval())
+
+			scfg.DNSConfigs = append(scfg.DNSConfigs, dnscfg)
+		}
+
 		scrapeConfs = append(scrapeConfs, scfg)
 	}
 
