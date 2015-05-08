@@ -8,6 +8,10 @@
 			"Rev": "aaf92c95712104318fc35409745f1533aa5ff327"
 		},
 		{
+			"ImportPath": "github.com/golang/protobuf/proto",
+			"Rev": "efd7476481382c195beb33acd8ec2f1527167fb4"
+		},
+		{
 			"ImportPath": "github.com/prometheus/log",
 			"Rev": "c1344118e003a86aefb326a436118ad1317266dd"
 		}
