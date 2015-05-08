@@ -150,6 +150,9 @@ func translate(in io.Reader, out io.Writer) error {
 	pat := regexp.MustCompile("- ([a-zA-Z-.]+:[0-9]+)\n")
 	s = pat.ReplaceAllString(s, "- '$1'\n")
 
+	pat = regexp.MustCompile("\n([a-z]|- j)")
+	s = pat.ReplaceAllString(s, "\n\n$1")
+
 	if _, err := out.Write([]byte(s)); err != nil {
 		return err
 	}
