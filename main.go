@@ -11,6 +11,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	clientmodel "github.com/prometheus/client_golang/model"
 	"github.com/prometheus/log"
+	"gopkg.in/yaml.v2"
 
 	"github.com/prometheus/migrate/v0x13"
 	"github.com/prometheus/migrate/v0x14"
@@ -91,7 +92,6 @@ func translate(in io.Reader, out io.Writer) error {
 				if err != nil {
 					return err
 				}
-				fmt.Println(u, u.Host)
 
 				if firstScheme == "" {
 					firstScheme = u.Scheme
@@ -107,7 +107,6 @@ func translate(in io.Reader, out io.Writer) error {
 				newTG.Targets = append(newTG.Targets, clientmodel.LabelSet{
 					clientmodel.AddressLabel: clientmodel.LabelValue(u.Host),
 				})
-
 			}
 
 			for _, lp := range oldTG.GetLabels().GetLabel() {
@@ -124,5 +123,13 @@ func translate(in io.Reader, out io.Writer) error {
 
 	newConf.ScrapeConfigs = scrapeConfs
 
+	res, err := yaml.Marshal(newConf)
+	if err != nil {
+		return err
+	}
+
+	if _, err := out.Write(res); err != nil {
+		return err
+	}
 	return nil
 }
