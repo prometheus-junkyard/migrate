@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/url"
 	"os"
+	"regexp"
 
 	"github.com/golang/protobuf/proto"
 	clientmodel "github.com/prometheus/client_golang/model"
@@ -143,8 +144,13 @@ func translate(in io.Reader, out io.Writer) error {
 	if err != nil {
 		return err
 	}
+	s := string(res)
 
-	if _, err := out.Write(res); err != nil {
+	// Surround hosts with spaces in output.
+	pat := regexp.MustCompile("- ([a-zA-Z-.]+:[0-9]+)\n")
+	s = pat.ReplaceAllString(s, "- '$1'\n")
+
+	if _, err := out.Write([]byte(s)); err != nil {
 		return err
 	}
 	return nil
