@@ -24,7 +24,7 @@ import (
 
 	"github.com/prometheus/prometheus/utility"
 
-	pb "github.com/prometheus/prometheus/config/generated"
+	pb "github.com/prometheus/migrate/v0x13/generated"
 )
 
 var jobNameRE = regexp.MustCompile("^[a-zA-Z_][a-zA-Z0-9_-]*$")
