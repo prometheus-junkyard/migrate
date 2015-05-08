@@ -10,13 +10,13 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/prometheus/log"
 
-	v0x13 "github.com/prometheus/migrate/v0x13"
+	"github.com/prometheus/migrate/v0x13"
 )
 
 var outName = flag.String("out", "-", "Target for writing the output")
 
 func usage() {
-	fmt.Fprintf(os.Stderr, "usage: %s [args ...] <config_file>", flag.Arg(0))
+	fmt.Fprintf(os.Stderr, "usage: %s [args ...] [<config_file>]", flag.Arg(0))
 
 	flag.PrintDefaults()
 	os.Exit(2)
@@ -50,8 +50,8 @@ func translate(in io.Reader, out io.Writer) error {
 	if err != nil {
 		return err
 	}
-	var oldConfig v0x13.PrometheusConfig
-	err = proto.UnmarshalText(string(b), &oldConfig)
+	var oldConfig v0x13.Config
+	err = proto.UnmarshalText(string(b), &oldConfig.PrometheusConfig)
 	if err != nil {
 		return fmt.Errorf("Error parsing old config file: %s", err)
 	}
