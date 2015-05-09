@@ -34,13 +34,14 @@ import (
 var outName = flag.String("out", "-", "Target for writing the output")
 
 func usage() {
-	fmt.Fprintf(os.Stderr, "usage: %s [args ...] [<config_file>]", flag.Arg(0))
+	fmt.Fprintf(os.Stderr, "usage: %s [-out=<output_file>] [<config_file>]\n\n", os.Args[0])
 
 	flag.PrintDefaults()
 	os.Exit(2)
 }
 
 func main() {
+	flag.Usage = usage
 	flag.Parse()
 
 	var (
