@@ -21,6 +21,7 @@ import (
 	"net/url"
 	"os"
 	"regexp"
+	"time"
 
 	"github.com/golang/protobuf/proto"
 	clientmodel "github.com/prometheus/client_golang/model"
@@ -85,8 +86,13 @@ func translate(in io.Reader, out io.Writer) error {
 	var newGlobConf v0x14.GlobalConfig
 
 	newGlobConf.ScrapeInterval = v0x14.Duration(oldConf.ScrapeInterval())
-	// The global scrape timeout is new and will be set to the global scrape interval.
-	newGlobConf.ScrapeTimeout = newGlobConf.ScrapeInterval
+	// The global scrape timeout is new and will be set to 10 seconds. If the
+	// global scrape interval is shorter than 10s, set the timeout to the scrape interval.
+	if defTimeout := v0x14.Duration(10 * time.Second); newGlobConf.ScrapeInterval >= defTimeout {
+		newGlobConf.ScrapeTimeout = v0x14.Duration(10 * time.Second)
+	} else {
+		newGlobConf.ScrapeTimeout = newGlobConf.ScrapeInterval
+	}
 	newGlobConf.EvaluationInterval = v0x14.Duration(oldConf.EvaluationInterval())
 
 	var newConf v0x14.Config
