@@ -66,7 +66,7 @@ var (
 	}
 
 	// The default DNS SD configuration.
-	DefaultDNSConfig = DefaultedDNSConfig{
+	DefaultDNSSDConfig = DefaultedDNSSDConfig{
 		RefreshInterval: Duration(30 * time.Second),
 	}
 )
@@ -122,7 +122,7 @@ type DefaultedConfig struct {
 	ScrapeConfigs []*ScrapeConfig `yaml:"scrape_configs,omitempty"`
 }
 
-// GlobalConfig configures values that used across other configuration
+// GlobalConfig configures values that are used across other configuration
 // objects.
 type GlobalConfig struct {
 	// DefaultedGlobalConfig contains the actual fields for GlobalConfig.
@@ -186,7 +186,7 @@ type DefaultedScrapeConfig struct {
 	// List of labeled target groups for this job.
 	TargetGroups []*TargetGroup `yaml:"target_groups,omitempty"`
 	// List of DNS service discovery configurations.
-	DNSConfigs []*DNSConfig `yaml:"dns_configs,omitempty"`
+	DNSSDConfigs []*DNSSDConfig `yaml:"dns_sd_configs,omitempty"`
 	// List of relabel configurations.
 	RelabelConfigs []*RelabelConfig `yaml:"relabel_configs,omitempty"`
 }
@@ -244,27 +244,27 @@ func (tg TargetGroup) MarshalYAML() (interface{}, error) {
 	return g, nil
 }
 
-// DNSConfig is the configuration for DNS based service discovery.
-type DNSConfig struct {
-	// DefaultedDNSConfig contains the actual fields for DNSConfig.
-	DefaultedDNSConfig `yaml:",inline"`
+// DNSSDConfig is the configuration for DNS based service discovery.
+type DNSSDConfig struct {
+	// DefaultedDNSSDConfig contains the actual fields for DNSSDConfig.
+	DefaultedDNSSDConfig `yaml:",inline"`
 }
 
 // UnmarshalYAML implements the yaml.Unmarshaller interface.
-func (c *DNSConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	c.DefaultedDNSConfig = DefaultDNSConfig
-	err := unmarshal(&c.DefaultedDNSConfig)
+func (c *DNSSDConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	c.DefaultedDNSSDConfig = DefaultDNSSDConfig
+	err := unmarshal(&c.DefaultedDNSSDConfig)
 	if err != nil {
 		return err
 	}
 	if len(c.Names) == 0 {
-		return fmt.Errorf("DNS config must contain at least one SRV server name")
+		return fmt.Errorf("DNS config must contain at least one SRV record name")
 	}
 	return nil
 }
 
-// DefaultedDNSConfig is a proxy type for DNSConfig.
-type DefaultedDNSConfig struct {
+// DefaultedDNSSDConfig is a proxy type for DNSSDConfig.
+type DefaultedDNSSDConfig struct {
 	Names           []string `yaml:"names"`
 	RefreshInterval Duration `yaml:"refresh_interval,omitempty"`
 }

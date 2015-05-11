@@ -124,12 +124,12 @@ func translate(in io.Reader, out io.Writer) error {
 				if firstScheme == "" {
 					firstScheme = u.Scheme
 				} else if u.Scheme != firstScheme {
-					return fmt.Errorf("Multiple URL schemes in Job not allowed.")
+					return fmt.Errorf("Multiple URL schemes in job not allowed.")
 				}
 				if firstPath == "" {
 					firstPath = u.Path
 				} else if u.Path != firstPath {
-					return fmt.Errorf("Multiple paths in Job not allowed")
+					return fmt.Errorf("Multiple paths in job not allowed")
 				}
 
 				newTG.Targets = append(newTG.Targets, clientmodel.LabelSet{
@@ -147,12 +147,12 @@ func translate(in io.Reader, out io.Writer) error {
 		scfg.Scheme = firstScheme
 
 		if oldJob.SdName != nil {
-			dnscfg := &v0x14.DNSConfig{}
+			dnscfg := &v0x14.DNSSDConfig{}
 
 			dnscfg.Names = []string{*oldJob.SdName}
 			dnscfg.RefreshInterval = v0x14.Duration(oldJob.SDRefreshInterval())
 
-			scfg.DNSConfigs = append(scfg.DNSConfigs, dnscfg)
+			scfg.DNSSDConfigs = append(scfg.DNSSDConfigs, dnscfg)
 		}
 
 		scrapeConfs = append(scrapeConfs, scfg)
