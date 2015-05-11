@@ -117,7 +117,7 @@ func (c *Config) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 // DefaultedConfig is a proxy type for Config.
 type DefaultedConfig struct {
-	GlobalConfig  *GlobalConfig   `yaml:"global_config"`
+	GlobalConfig  *GlobalConfig   `yaml:"global"`
 	RuleFiles     []string        `yaml:"rule_files,omitempty"`
 	ScrapeConfigs []*ScrapeConfig `yaml:"scrape_configs,omitempty"`
 }
