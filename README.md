@@ -8,9 +8,7 @@ respective YAML equivalent.
 Install:
 ```
 $ go get github.com/tools/godep
-$ go get github.com/prometheus/migrate
-$ cd $GOPATH/src/github.com/prometheus/migrate
-$ godep go install
+$ godep get github.com/prometheus/migrate
 ```
 
 Usage:
