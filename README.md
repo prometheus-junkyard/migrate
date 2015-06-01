@@ -1,6 +1,9 @@
 # Prometheus Migration Tool
 
-A tool for migrating Prometheus configuration files across versions.
+A tool for upgrading Prometheus setups to a newer version.
+
+Currently, it migrates ASCII protcol buffer configurations from pre-v0.14 setups to the
+respective YAML equivalent.
 
 Install:
 ```
@@ -15,6 +18,8 @@ Usage:
 migrate -out=new_conf.yml old_conf.conf
 ```
 
-Migration will not preserve your comments. It is generally recommended for larger files that are tedious to migrate by hand.
+Migration will not preserve comments. It is generally recommended for 
+larger files that are tedious to translate by hand.
 
-Reading the configuration documentation will provide you with further insight about new possibilities.
+Reading the configuration documentation will provide you with further insight 
+about new possibilities.
